@@ -53,11 +53,11 @@ backend/src/main/java/com/citasalud/
 └── config/         SecurityConfig, OpenApiConfig, RelojConfig, DatosIniciales
 ```
 
-Diagramas, trazabilidad y patrones GRASP/GoF: [diagramas/README.md](diagramas/README.md).
+Diagramas hechos en Visual Paradigm (modelo [`diagramas/CitaSalud.vpp`](diagramas/CitaSalud.vpp), imágenes en [`diagramas/visual-paradigm/`](diagramas/visual-paradigm/)); trazabilidad y patrones GRASP/GoF en [diagramas/README.md](diagramas/README.md).
 
 | Contexto | Lógica |
 |---|---|
-| ![Contexto](diagramas/vista-contexto.png) | ![Lógica](diagramas/vista-logica.png) |
+| ![Contexto](diagramas/visual-paradigm/vp-contexto.png) | ![Lógica](diagramas/visual-paradigm/vp-logica.png) |
 
 ## Estructura del repositorio
 
@@ -65,7 +65,7 @@ Diagramas, trazabilidad y patrones GRASP/GoF: [diagramas/README.md](diagramas/RE
 ├── backend/          API REST (Spring Boot)
 ├── frontend/         App React
 ├── database/         Colecciones de MongoDB
-├── diagramas/        PNG de las vistas UML + fuentes + trazabilidad
+├── diagramas/        CitaSalud.vpp (Visual Paradigm), PNG exportados, borradores PlantUML y trazabilidad
 ├── docs/
 │   ├── historias/    Una HU por archivo + resumen
 │   ├── mockups/      Una pantalla por HU

@@ -1,16 +1,18 @@
 # 5. Arquitectura y diagramas
 
-Los PNG de esta carpeta son **borradores de referencia** generados desde las fuentes de `fuentes/*.puml` (PlantUML). La versión final de cada vista se dibuja en **Visual Paradigm** siguiendo estos borradores y se exporta con el mismo nombre de archivo para reemplazarlos.
+Los diagramas finales están hechos en **Visual Paradigm Community 18.1**. El modelo fuente es [`diagramas/CitaSalud.vpp`](https://github.com/laurameza7/CitaSalud/blob/main/diagramas/CitaSalud.vpp) (un proyecto con los 7 diagramas) y las imágenes exportadas están en [`diagramas/visual-paradigm/`](https://github.com/laurameza7/CitaSalud/tree/main/diagramas/visual-paradigm).
 
-| Vista | Archivo | Tipo de diagrama | Qué cubre |
-|---|---|---|---|
-| 1. Contexto (nivel 0) | `vista-contexto.png` | Diagrama de contexto: el sistema como un círculo y 6 actores como rectángulos | Todas las HU |
-| 2. Funcional | `vista-funcional.png` | Diagrama de componentes con puertos, interfaces provistas y requeridas y «delegate» | Componentes ↔ HU (tabla abajo) |
-| 3. Lógica | `vista-logica.png` | Diagrama de clases del dominio con herencia, interfaces, enumeraciones y multiplicidades | Paquete `model` |
-| 4. Desarrollo | `vista-desarrollo.png` | Clases por capas: `Presentacion_Controller`, `Negocio_Service`, `Datos_Repository` y `Modelo_de_Dominio` | Paquetes `controller`, `service`, `repository`, `model` |
-| 5. Despliegue | `vista-despliegue.png` | Nodos (cubos) en tres capas: navegador, Vercel, Render (Docker) y MongoDB Atlas | RNF_009 |
-| Secuencia | `secuencia-agendar-cita.png` | HU_009 con fragmentos alt: fuera de horario (422), franja ocupada (409), pago rechazado (402), éxito (201) | RF_009 a RF_011 |
-| Secuencia | `secuencia-cancelar-cita.png` | HU_011 con fragmentos alt: no existe (404), otra persona (403), menos de 24 h (422), éxito (200) | RF_013 |
+Los archivos `diagramas/vista-*.png`, `diagramas/secuencia-*.png` y `diagramas/fuentes/*.puml` son los **borradores en PlantUML** que sirvieron de plano; se conservan solo como referencia.
+
+| Vista | Visual Paradigm | Borrador PlantUML | Tipo de diagrama | Qué cubre |
+|---|---|---|---|---|
+| 1. Contexto (nivel 0) | [`vp-contexto.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-contexto.png) | [`vista-contexto.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/vista-contexto.png) | Diagrama de contexto: el sistema como un círculo y 6 actores; flechas de acciones hacia el sistema y de datos desde el sistema | Todas las HU |
+| 2. Funcional | [`vp-funcional.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-funcional.png) | [`vista-funcional.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/vista-funcional.png) | Diagrama de componentes con puertos, interfaces provistas y requeridas y «delegate» | Componentes ↔ HU (tabla abajo) |
+| 3. Lógica | [`vp-logica.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-logica.png) | [`vista-logica.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/vista-logica.png) | Diagrama de clases del dominio con herencia, interfaces, enumeraciones y multiplicidades | Paquete `model` |
+| 4. Desarrollo | [`vp-desarrollo.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-desarrollo.png) | [`vista-desarrollo.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/vista-desarrollo.png) | Clases por capas: `Presentacion_Controller`, `Negocio_Service`, `Datos_Repository` y `Modelo_de_Dominio` | Paquetes `controller`, `service`, `repository`, `model` |
+| 5. Despliegue | [`vp-despliegue.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-despliegue.png) | [`vista-despliegue.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/vista-despliegue.png) | Nodos en tres capas: dispositivo/navegador, Vercel, Render (Docker) y MongoDB Atlas, más GitHub | RNF_009 |
+| Secuencia: agendar cita | [`vp-secuencia-agendar-cita.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-secuencia-agendar-cita.png) | [`secuencia-agendar-cita.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/secuencia-agendar-cita.png) | HU_009 con fragmentos alt: fuera de horario (422), franja ocupada (409), pago rechazado (402), éxito (201) | RF_009 a RF_011 |
+| Secuencia: cancelar cita | [`vp-secuencia-cancelar-cita.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-secuencia-cancelar-cita.png) | [`secuencia-cancelar-cita.png`](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/secuencia-cancelar-cita.png) | HU_011 con fragmentos alt: no existe (404), otra persona (403), menos de 24 h (422), éxito (200) | RF_013 |
 
 ## Trazabilidad de la vista funcional
 
@@ -27,31 +29,32 @@ Los PNG de esta carpeta son **borradores de referencia** generados desde las fue
 | Integración de pagos | `PasarelaPagos`, `PasarelaPagosSimulada` | HU_009, HU_011 | RF_011, RF_013, RNF_012 |
 | Persistencia | `UsuarioRepositorio`, `EspecialidadRepositorio`, `CitaRepositorio` | Todas | RNF_002 |
 
+## Diagramas (Visual Paradigm)
 
-### vista-contexto
+### 1. Contexto (nivel 0)
 
-![vista-contexto](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/vista-contexto.png)
+![1. Contexto (nivel 0)](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-contexto.png)
 
-### vista-funcional
+### 2. Funcional
 
-![vista-funcional](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/vista-funcional.png)
+![2. Funcional](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-funcional.png)
 
-### vista-logica
+### 3. Lógica
 
-![vista-logica](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/vista-logica.png)
+![3. Lógica](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-logica.png)
 
-### vista-desarrollo
+### 4. Desarrollo
 
-![vista-desarrollo](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/vista-desarrollo.png)
+![4. Desarrollo](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-desarrollo.png)
 
-### vista-despliegue
+### 5. Despliegue
 
-![vista-despliegue](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/vista-despliegue.png)
+![5. Despliegue](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-despliegue.png)
 
-### secuencia-agendar-cita
+### Secuencia: agendar cita
 
-![secuencia-agendar-cita](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/secuencia-agendar-cita.png)
+![Secuencia: agendar cita](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-secuencia-agendar-cita.png)
 
-### secuencia-cancelar-cita
+### Secuencia: cancelar cita
 
-![secuencia-cancelar-cita](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/secuencia-cancelar-cita.png)
+![Secuencia: cancelar cita](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-secuencia-cancelar-cita.png)

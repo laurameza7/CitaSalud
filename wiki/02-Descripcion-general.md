@@ -14,7 +14,7 @@ Paciente, Médico, Recepcionista y Administrador heredan de la clase abstracta `
 
 ## Restricciones
 - Backend en Java 17 con Spring Boot 3 y base de datos MongoDB.
-- Diagramas en Visual Paradigm.
+- Diagramas en Visual Paradigm (modelo `diagramas/CitaSalud.vpp`).
 - Ninguna credencial dentro del repositorio.
 
-![Vista de contexto](https://raw.githubusercontent.com/REPOSITORIO/main/diagramas/vista-contexto.png)
+![Vista de contexto](https://raw.githubusercontent.com/laurameza7/CitaSalud/main/diagramas/visual-paradigm/vp-contexto.png)

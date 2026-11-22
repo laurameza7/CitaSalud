@@ -1,10 +1,38 @@
-# Guía para dibujar los diagramas en Visual Paradigm
+# Diagramas en Visual Paradigm
 
-Los diagramas finales deben estar hechos en Visual Paradigm (Community Edition sirve). Usa los PNG de `diagramas/` como plano: ábrelos a un lado de la pantalla y dibuja encima en VP. Crea un solo proyecto, `CitaSalud.vpp`, con un diagrama por vista.
+Los 7 diagramas ya están hechos en un solo proyecto de Visual Paradigm: **`diagramas/CitaSalud.vpp`** (Visual Paradigm Community 18.1). No hay que dibujarlos de nuevo.
+
+| Diagrama en el .vpp | Imagen exportada |
+|---|---|
+| Vista de contexto (nivel 0) | `diagramas/visual-paradigm/vp-contexto.png` |
+| Vista funcional (componentes) | `diagramas/visual-paradigm/vp-funcional.png` |
+| Vista logica - CitaSalud | `diagramas/visual-paradigm/vp-logica.png` |
+| Vista de desarrollo (clases por capas) | `diagramas/visual-paradigm/vp-desarrollo.png` |
+| Vista de despliegue | `diagramas/visual-paradigm/vp-despliegue.png` |
+| Secuencia - Agendar cita (HU_009) | `diagramas/visual-paradigm/vp-secuencia-agendar-cita.png` |
+| Secuencia - Cancelar cita (HU_011) | `diagramas/visual-paradigm/vp-secuencia-cancelar-cita.png` |
+
+## Abrir el modelo
+
+1. Instala Visual Paradigm Community Edition (gratuita para uso no comercial), versión 18.1 o superior.
+2. *Project → Open* y elige `diagramas/CitaSalud.vpp`.
+3. Los diagramas aparecen en el *Diagram Navigator* y los elementos en el *Model Explorer*.
+
+## Exportar las imágenes
+
+- Un diagrama: ábrelo y usa *Project → Export → Active Diagram as Image…* (PNG).
+- Todos a la vez: *Project → Export → Diagrams as Image…*, marca los 7 diagramas y exporta en PNG.
+- Guarda los PNG en `diagramas/visual-paradigm/` con los nombres de la tabla (sin espacios ni tildes).
+
+Cierra Visual Paradigm antes de hacer commit: mientras el proyecto está abierto crea archivos temporales (`.CitaSalud.vpp.lck`, `CitaSalud.vpp.bak_*`) que están en `.gitignore`.
+
+## Qué contiene cada vista (referencia)
+
+Lo que sigue es la lista de elementos que debe tener cada diagrama. Sirve para revisarlos o modificarlos. Los borradores en PlantUML (`diagramas/fuentes/*.puml` y los PNG `diagramas/vista-*.png`) tienen el mismo contenido.
 
 Consejo general: activa *conectores rectilíneos* (clic derecho en el fondo → Connectors → Rectilinear) y usa *Layout → Auto Layout* al final para ordenar.
 
-## 1. Vista de contexto (nivel 0)
+### 1. Vista de contexto (nivel 0)
 
 1. *Diagram → New → Data Flow Diagram* (o *Block Definition*). Sirve cualquiera que permita óvalos y rectángulos.
 2. Dibuja **un solo óvalo/círculo** en el centro: «CitaSalud».
@@ -12,7 +40,7 @@ Consejo general: activa *conectores rectilíneos* (clic derecho en el fondo → 
 4. Por cada actor, dos flechas: una **hacia** el círculo con la **acción** y otra **desde** el círculo con los **datos** que devuelve. Copia los textos del PNG (incluyen las HU).
 5. MongoDB **no** va como actor: está dentro del sistema.
 
-## 2. Vista funcional (componentes)
+### 2. Vista funcional (componentes)
 
 1. *Diagram → New → Component Diagram*.
 2. Crea un componente grande con estereotipo «subsystem» llamado *CitaSalud API*.
@@ -29,7 +57,7 @@ Consejo general: activa *conectores rectilíneos* (clic derecho en el fondo → 
 6. **Delegate**: conectores punteados con estereotipo «delegate» desde `pRest` a los componentes que atienden peticiones, y desde Integración de pagos a `pPago` y Persistencia a `pBD`.
 7. Fuera del subsistema: el componente *App web/móvil (React)* (requiere `API REST`), los 4 actores humanos conectados a la app, *Pasarela de pagos* (provee `Cobro y reembolso`) y la base *MongoDB* (provee `Driver MongoDB`).
 
-## 3. Vista lógica (clases)
+### 3. Vista lógica (clases)
 
 1. *Diagram → New → Class Diagram*.
 2. Opción rápida: *Tools → Code → Instant Reverse…*, elige *Java source*, apunta a `backend/src/main/java/com/citasalud/model` y arrastra las clases al diagrama. Luego borra lo que sobre y ajusta según el PNG.
@@ -41,7 +69,7 @@ Consejo general: activa *conectores rectilíneos* (clic derecho en el fondo → 
    - Constructor, getters/setters y métodos de negocio en cada clase.
 4. Agrega una **nota** con los patrones GRASP y GoF (cópiala de la leyenda del PNG) y pinta de otro color las clases Experto/Creador.
 
-## 4. Vista de desarrollo (clases por capas)
+### 4. Vista de desarrollo (clases por capas)
 
 1. *Class Diagram* con 4 paquetes: `Presentacion_Controller`, `Negocio_Service`, `Datos_Repository` y `Modelo_de_Dominio` (este último no es una capa).
 2. Relaciones (como en el material del profesor):
@@ -51,16 +79,12 @@ Consejo general: activa *conectores rectilíneos* (clic derecho en el fondo → 
    - Repository → dominio: punteada «persiste».
    - Repositorios como «interface» que heredan de `MongoRepository`. MongoDB no se dibuja como clase.
 
-## 5. Vista de despliegue
+### 5. Vista de despliegue
 
 1. *Diagram → New → Deployment Diagram*.
 2. Nodos (cubos): Dispositivo del usuario (con el entorno Navegador), Vercel, Render (con el entorno Contenedor Docker y el artefacto `citasalud-backend-1.0.0.jar`), MongoDB Atlas y GitHub.
 3. Conexiones con el protocolo: HTTPS, HTTPS/JSON + JWT, TCP 27017/TLS.
 
-## Secuencias
+### Secuencias
 
 *Diagram → New → Sequence Diagram*. Participantes: actor, Controller, Service, Repository/clases del dominio, PasarelaPagos y MongoDB. Usa *Combined Fragment → alt* para los casos alternativos tal como en los PNG.
-
-## Exportar
-
-*Project → Export → Active Diagram as Image* (PNG) con el mismo nombre del borrador, y reemplaza el archivo en `diagramas/`.
