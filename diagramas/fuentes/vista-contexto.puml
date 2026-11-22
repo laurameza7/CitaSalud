@@ -1,0 +1,43 @@
+@startuml vista-contexto
+' Vista de contexto (nivel 0): el sistema es un solo círculo y los actores son rectángulos.
+' Flechas hacia el sistema = acciones. Flechas desde el sistema = datos que devuelve.
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam rectangle {
+  BackgroundColor #E0F2F1
+  BorderColor #0F766E
+}
+skinparam usecase {
+  BackgroundColor #0F766E
+  FontColor white
+  BorderColor #0F766E
+}
+left to right direction
+
+rectangle "Visitante" as V
+rectangle "Paciente" as P
+rectangle "Médico" as M
+rectangle "Recepcionista" as R
+rectangle "Administrador" as A
+rectangle "Pasarela de pagos\n(sistema externo)" as PP
+
+usecase "\n   CitaSalud   \n" as S
+
+V --> S : consultar especialidades,\nmédicos y disponibilidad;\nregistrarse (HU_001, HU_007, HU_008)
+S --> V : especialidades, tarifas,\nmédicos y franjas libres
+
+P --> S : iniciar sesión, agendar y pagar,\ncancelar, reprogramar\n(HU_002, HU_009 a HU_012)
+S --> P : token, confirmación de la cita,\nvalor pagado, lista de mis citas
+
+M --> S : definir horario, consultar agenda,\nregistrar atención o inasistencia\n(HU_006, HU_014, HU_015)
+S --> M : agenda del día con pacientes y motivos
+
+R --> S : buscar paciente, agendar,\ncancelar o reprogramar por él (HU_013)
+S --> R : datos del paciente, franjas libres,\ncita agendada
+
+A --> S : gestionar especialidades, médicos\ny recepcionistas; pedir reporte\n(HU_003 a HU_005, HU_016)
+S --> A : listados y reporte de citas\npor especialidad y recaudo
+
+S --> PP : solicitud de cobro\ny de reembolso (RF_011, RF_013)
+PP --> S : pago aprobado o rechazado,\nreferencia del pago
+@enduml

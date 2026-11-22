@@ -1,0 +1,177 @@
+@startuml vista-desarrollo
+' Vista de desarrollo: clases por capas (arquitectura en capas con DTO), formato del profesor.
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam linetype ortho
+skinparam packageStyle rectangle
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #0F766E
+}
+hide empty members
+top to bottom direction
+
+package "Presentacion_Controller" #E0F2F1 {
+  class AuthController {
+    + registrar(RegistroPacienteRequest) : UsuarioResponse
+    + login(LoginRequest) : LoginResponse
+    + yo(UsuarioActual) : UsuarioResponse
+  }
+  class EspecialidadController {
+    + listar(incluirInactivas) : List<EspecialidadResponse>
+    + obtener(id) : EspecialidadResponse
+    + valor(id, tipoPaciente) : ValorCitaResponse
+    + crear(EspecialidadRequest) : EspecialidadResponse
+    + actualizar(id, EspecialidadRequest) : EspecialidadResponse
+    + desactivar(id) : void
+  }
+  class MedicoController {
+    + listar(especialidadId, incluirInactivos) : List<MedicoResponse>
+    + obtener(id) : MedicoResponse
+    + disponibilidad(id, fecha) : DisponibilidadResponse
+    + crear(MedicoRequest) : MedicoResponse
+    + actualizar(id, MedicoRequest) : MedicoResponse
+    + desactivar(id) : void
+    + actualizarHorarios(id, List<HorarioDto>) : MedicoResponse
+  }
+  class RecepcionistaController {
+    + listar() : List<UsuarioResponse>
+    + crear(RecepcionistaRequest) : UsuarioResponse
+    + desactivar(id) : void
+  }
+  class PacienteController {
+    + buscar(documento) : UsuarioResponse
+  }
+  class CitaController {
+    + agendar(AgendarCitaRequest) : CitaResponse
+    + misCitas() : List<CitaResponse>
+    + agenda(fecha) : List<CitaResponse>
+    + obtener(id) : CitaResponse
+    + cancelar(id) : CitaResponse
+    + reprogramar(id, ReprogramarCitaRequest) : CitaResponse
+    + registrarAtencion(id, AtencionRequest) : CitaResponse
+    + marcarInasistencia(id) : CitaResponse
+  }
+  class ReporteController {
+    + citas(desde, hasta) : ReporteResponse
+  }
+}
+
+package "Negocio_Service" #F0FDFA {
+  class AuthServicio {
+    + registrar(...) : UsuarioResponse
+    + login(...) : LoginResponse
+  }
+  class EspecialidadServicio {
+    + listar(...) / crear(...) / actualizar(...) / desactivar(...)
+    + valorPara(id, tipo) : ValorCitaResponse
+  }
+  class MedicoServicio {
+    + listar(...) / crear(...) / actualizar(...) / desactivar(...)
+    + actualizarHorarios(id, horarios, actual) : MedicoResponse
+  }
+  class DisponibilidadServicio {
+    + consultar(medicoId, fecha) : DisponibilidadResponse
+    + franjasLibres(medico, fecha) : List<LocalDateTime>
+    + verificarFranjaLibre(medico, fechaHora) : void
+  }
+  class RecepcionistaServicio {
+    + listar() / crear(...) / desactivar(id)
+  }
+  class PacienteServicio {
+    + buscarPorDocumento(documento) : UsuarioResponse
+  }
+  class CitaServicio {
+    + agendar(datos, actual) : CitaResponse
+    + misCitas(actual) : List<CitaResponse>
+    + cancelar(id, actual) : CitaResponse
+    + reprogramar(id, nuevaFechaHora, actual) : CitaResponse
+    + agenda(fecha, actual) : List<CitaResponse>
+    + registrarAtencion(id, notas, actual) : CitaResponse
+    + marcarInasistencia(id, actual) : CitaResponse
+  }
+  class ReporteServicio {
+    + generar(desde, hasta) : ReporteResponse
+  }
+  interface PasarelaPagos <<interface>> {
+    + cobrar(...) : ResultadoPago
+    + reembolsar(...) : boolean
+  }
+}
+
+package "Datos_Repository" #ECFEFF {
+  interface UsuarioRepositorio <<interface>> {
+    + findByCorreo(correo) : Optional<Usuario>
+    + findByRolOrderByNombreAsc(rol) : List<Usuario>
+    + buscarPacientePorDocumento(documento) : Optional<Usuario>
+  }
+  interface EspecialidadRepositorio <<interface>> {
+    + findByActivaTrueOrderByNombreAsc() : List<Especialidad>
+    + existsByNombreIgnoreCase(nombre) : boolean
+  }
+  interface CitaRepositorio <<interface>> {
+    + findByMedicoAndEstadoAndFechaHoraBetween(...) : List<Cita>
+    + existsByMedicoAndFechaHoraAndEstado(...) : boolean
+    + existsByPacienteAndEspecialidadAndEstado(...) : boolean
+    + findByPacienteOrderByFechaHoraDesc(paciente) : List<Cita>
+    + findByFechaHoraBetween(desde, hasta) : List<Cita>
+  }
+  interface "MongoRepository<T, String>" as MongoRepository <<interface>>
+}
+
+package "Modelo_de_Dominio" #FFFFFF {
+  abstract class Usuario
+  class Paciente
+  class Medico
+  class Recepcionista
+  class Administrador
+  class Especialidad
+  class Cita
+  class HorarioAtencion
+  class ReporteCitas
+  interface EstrategiaTarifa <<interface>>
+}
+
+AuthController --> AuthServicio : delega
+EspecialidadController --> EspecialidadServicio : delega
+MedicoController --> MedicoServicio : delega
+MedicoController --> DisponibilidadServicio : delega
+RecepcionistaController --> RecepcionistaServicio : delega
+PacienteController --> PacienteServicio : delega
+CitaController --> CitaServicio : delega
+ReporteController --> ReporteServicio : delega
+
+AuthServicio --> UsuarioRepositorio : guarda y consulta
+EspecialidadServicio --> EspecialidadRepositorio : guarda y consulta
+MedicoServicio --> UsuarioRepositorio : guarda y consulta
+MedicoServicio --> EspecialidadServicio : usa
+RecepcionistaServicio --> UsuarioRepositorio : guarda y consulta
+PacienteServicio --> UsuarioRepositorio : consulta
+DisponibilidadServicio --> CitaRepositorio : consulta
+DisponibilidadServicio --> MedicoServicio : usa
+CitaServicio --> CitaRepositorio : guarda y consulta
+CitaServicio --> DisponibilidadServicio : usa
+CitaServicio --> PasarelaPagos : cobra y reembolsa
+ReporteServicio --> CitaRepositorio : consulta
+
+MongoRepository <|-- UsuarioRepositorio
+MongoRepository <|-- EspecialidadRepositorio
+MongoRepository <|-- CitaRepositorio
+
+Usuario <|-- Paciente
+Usuario <|-- Medico
+Usuario <|-- Recepcionista
+Usuario <|-- Administrador
+
+CitaServicio ..> Cita : crea y devuelve
+ReporteServicio ..> ReporteCitas : crea y devuelve
+EspecialidadServicio ..> EstrategiaTarifa : usa
+UsuarioRepositorio ..> Usuario : persiste
+EspecialidadRepositorio ..> Especialidad : persiste
+CitaRepositorio ..> Cita : persiste
+
+note right of Presentacion_Controller
+  Los controllers reciben y devuelven DTO
+  (*Request / *Response) y nunca usan repositorios.
+end note
+@enduml

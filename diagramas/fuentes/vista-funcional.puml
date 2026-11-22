@@ -1,0 +1,99 @@
+@startuml vista-funcional
+' Vista funcional: diagrama de componentes UML con puertos, interfaces provistas (lollipop),
+' requeridas (socket) y conectores «delegate» hacia la frontera del subsistema.
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam componentStyle uml2
+skinparam component {
+  BackgroundColor #E0F2F1
+  BorderColor #0F766E
+}
+left to right direction
+
+actor "Visitante /\nPaciente" as AP
+actor "Médico" as AM
+actor "Recepcionista" as AR
+actor "Administrador" as AA
+
+component "App web/móvil\n(React)" as UI <<component>> {
+  portout "pUI" as pUI
+}
+
+component "CitaSalud API" as API <<subsystem>> {
+  portin "pRest" as pRest
+  portout "pPago" as pPagoExt
+  portout "pBD" as pBDExt
+
+  component "Seguridad\n(FiltroJwt, JwtServicio)" as SEG
+  component "Autenticación\n(AuthController, AuthServicio)\nHU_001, HU_002" as AUTH
+  component "Especialidades y tarifas\n(EspecialidadController,\nEspecialidadServicio, EstrategiaTarifa)\nHU_003, HU_007, RF_010" as ESP
+  component "Médicos y horarios\n(MedicoController, MedicoServicio)\nHU_004, HU_006" as MED
+  component "Disponibilidad\n(DisponibilidadServicio)\nHU_008" as DISP
+  component "Recepción\n(RecepcionistaController,\nPacienteController)\nHU_005, HU_013" as REC
+  component "Citas\n(CitaController, CitaServicio)\nHU_009 a HU_015" as CITAS
+  component "Reportes\n(ReporteController, ReporteServicio)\nHU_016" as REP
+  component "Integración de pagos\n(PasarelaPagos)\nRNF_012" as INT
+  component "Persistencia\n(Repositorios Spring Data)" as PER
+
+  interface "IAutenticacion" as IAuth
+  interface "IEspecialidades" as IEsp
+  interface "IMedicos" as IMed
+  interface "IDisponibilidad" as IDisp
+  interface "IPacientes" as IPac
+  interface "IPagos" as IPag
+  interface "IRepositorios" as IRepo
+}
+
+interface "API REST /api/*" as IRest
+interface "Cobro y reembolso" as ICobro
+interface "Driver MongoDB" as IMongo
+
+component "Pasarela de pagos\n(externa, simulada)" as PAS
+database "MongoDB\n(usuarios, especialidades, citas)" as DB
+
+AP --> UI
+AM --> UI
+AR --> UI
+AA --> UI
+pUI --( IRest
+IRest - pRest
+
+' Delegación desde el puerto de frontera hacia los componentes internos
+pRest ..> SEG : <<delegate>>
+pRest ..> AUTH : <<delegate>>
+pRest ..> ESP : <<delegate>>
+pRest ..> MED : <<delegate>>
+pRest ..> REC : <<delegate>>
+pRest ..> CITAS : <<delegate>>
+pRest ..> REP : <<delegate>>
+
+' Interfaces provistas (lollipop) y requeridas (socket) entre componentes
+AUTH - IAuth
+SEG --( IAuth
+ESP - IEsp
+MED --( IEsp
+MED - IMed
+DISP --( IMed
+CITAS --( IMed
+DISP - IDisp
+CITAS --( IDisp
+REC - IPac
+CITAS --( IPac
+INT - IPag
+CITAS --( IPag
+PER - IRepo
+CITAS --( IRepo
+
+INT ..> pPagoExt : <<delegate>>
+PER ..> pBDExt : <<delegate>>
+pPagoExt --( ICobro
+ICobro - PAS
+pBDExt --( IMongo
+IMongo - DB
+note bottom of PER
+  Persistencia provee IRepositorios.
+  La requieren Autenticación, Especialidades,
+  Médicos, Disponibilidad, Recepción, Citas y Reportes
+  (en el diagrama solo se dibuja la de Citas para no saturarlo).
+end note
+@enduml

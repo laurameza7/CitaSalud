@@ -1,0 +1,69 @@
+:root {
+  --primario: #0f766e;
+  --primario-suave: #ccfbf1;
+  --texto: #1f2937;
+  --suave: #6b7280;
+  --fondo: #f3f6f8;
+  --tarjeta: #ffffff;
+  --borde: #e5e7eb;
+  --peligro: #b91c1c;
+  --exito: #15803d;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: var(--fondo); color: var(--texto); }
+.app { max-width: 720px; margin: 0 auto; padding-bottom: 48px; }
+main { padding: 0 16px; }
+h1 { font-size: 1.5rem; margin: 16px 0 8px; }
+h2 { font-size: 1.15rem; margin: 20px 0 8px; }
+a { color: var(--primario); }
+
+.barra { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 16px; background: var(--primario); color: white; }
+.barra nav { display: flex; flex-wrap: wrap; gap: 12px; }
+.barra a, .barra .enlace { color: white; text-decoration: none; opacity: .85; background: none; border: 0; font: inherit; cursor: pointer; padding: 0; }
+.barra a.active { opacity: 1; font-weight: 600; text-decoration: underline; }
+.marca { font-weight: 700; font-size: 1.1rem; }
+.saludo { margin: 8px 16px 0; color: var(--suave); font-size: .9rem; }
+
+.tarjeta { display: block; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 14px; margin: 10px 0; color: inherit; }
+.tarjeta p { margin: 6px 0 0; }
+.enlace-tarjeta { text-decoration: none; }
+.enlace-tarjeta:hover { border-color: var(--primario); }
+.fila { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.suave { color: var(--suave); font-size: .9rem; }
+.total { font-size: 1.2rem; font-weight: 700; }
+
+form { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+form.fila { flex-direction: row; }
+label { display: flex; flex-direction: column; gap: 4px; font-size: .9rem; }
+input, select, textarea { font: inherit; padding: 10px; border: 1px solid var(--borde); border-radius: 8px; background: white; min-width: 0; }
+textarea { min-height: 70px; width: 100%; }
+
+.boton { display: inline-block; background: var(--primario); color: white; border: 0; border-radius: 8px; padding: 10px 14px; font: inherit; cursor: pointer; text-decoration: none; text-align: center; margin-top: 8px; }
+.boton:disabled { opacity: .5; cursor: not-allowed; }
+.boton.secundario { background: white; color: var(--primario); border: 1px solid var(--primario); }
+.boton.peligro { background: white; color: var(--peligro); border: 1px solid var(--peligro); }
+.acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.panel { width: 100%; border-top: 1px dashed var(--borde); padding-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+
+.franjas { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.franja { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--primario); background: white; color: var(--primario); cursor: pointer; font: inherit; }
+.franja.activa { background: var(--primario); color: white; }
+
+.estado { font-size: .8rem; padding: 3px 8px; border-radius: 999px; background: var(--primario-suave); color: var(--primario); }
+.estado.CANCELADA { background: #fee2e2; color: var(--peligro); }
+.estado.ATENDIDA { background: #dcfce7; color: var(--exito); }
+.estado.NO_ASISTIO { background: #fef3c7; color: #92400e; }
+
+.mensaje { padding: 10px; border-radius: 8px; }
+.mensaje.error { background: #fee2e2; color: var(--peligro); }
+.mensaje.exito { background: #dcfce7; color: var(--exito); }
+
+.pestanas { display: flex; gap: 6px; overflow-x: auto; margin: 8px 0; }
+.pestanas button { border: 1px solid var(--borde); background: white; border-radius: 999px; padding: 6px 12px; font: inherit; cursor: pointer; white-space: nowrap; }
+.pestanas button.activa { background: var(--primario); color: white; border-color: var(--primario); }
+
+.tabla { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: white; font-size: .9rem; }
+th, td { padding: 8px; border-bottom: 1px solid var(--borde); text-align: left; }
+tfoot td { font-weight: 700; }

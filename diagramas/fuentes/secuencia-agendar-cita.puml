@@ -1,0 +1,54 @@
+@startuml secuencia-agendar-cita
+' Secuencia de HU_009 Agendar cita (RF_009, RF_010, RF_011).
+skinparam defaultFontName Arial
+skinparam shadowing false
+autonumber
+
+actor Paciente
+participant "CitaController" as C
+participant "CitaServicio" as S
+participant "MedicoServicio" as MS
+participant "Medico" as M
+participant "DisponibilidadServicio" as D
+participant "CitaRepositorio" as R
+participant "PasarelaPagos" as P
+database MongoDB
+
+Paciente -> C : POST /api/citas\n{medicoId, fechaHora, motivo, numeroTarjeta}
+C -> S : agendar(datos, usuarioActual)
+S -> MS : buscarMedico(medicoId)
+MS -> MongoDB : findById
+MongoDB --> MS : medico
+MS --> S : medico
+S -> M : crearCita(paciente, fechaHora, motivo, ahora)
+M -> M : atiendeEn(fechaHora)
+alt fuera del horario o fecha pasada
+  M --> S : ReglaNegocioException
+  S --> C : excepción
+  C --> Paciente : 422 "El médico no atiende en esa fecha y hora"
+else dentro del horario
+  M --> S : cita (PROGRAMADA, valor calculado con EstrategiaTarifa)
+  S -> D : verificarFranjaLibre(medico, fechaHora)
+  D -> R : existsByMedicoAndFechaHoraAndEstado
+  R -> MongoDB : consulta
+  alt franja ocupada
+    D --> S : ConflictoException
+    C --> Paciente : 409 "La franja ya no está disponible"
+  else franja libre
+    S -> P : cobrar(numeroTarjeta, valor, concepto)
+    alt pago rechazado
+      P --> S : ResultadoPago(aprobado = false)
+      C --> Paciente : 402 "Pago rechazado"
+    else pago aprobado
+      P --> S : ResultadoPago(aprobado = true, referencia)
+      S -> S : cita.registrarPago(referencia)
+      S -> R : save(cita)
+      R -> MongoDB : insert en "citas"
+      MongoDB --> R : cita con id
+      R --> S : cita
+      S --> C : CitaResponse
+      C --> Paciente : 201 Created + cita
+    end
+  end
+end
+@enduml

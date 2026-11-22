@@ -1,0 +1,16 @@
+# Compilación
+backend/target/
+frontend/node_modules/
+frontend/dist/
+
+# Variables de entorno con credenciales (nunca subir)
+.env
+*.env
+!.env.example
+
+# IDE y sistema
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db

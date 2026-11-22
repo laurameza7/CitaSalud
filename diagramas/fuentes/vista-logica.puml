@@ -1,0 +1,224 @@
+@startuml vista-logica
+' Vista lógica: diagrama de clases del dominio, sacado del código real (paquete com.citasalud.model).
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam linetype ortho
+skinparam class {
+  BackgroundColor #FFFFFF
+  BorderColor #0F766E
+  ArrowColor #334155
+}
+skinparam stereotypeCBackgroundColor #99F6E4
+hide empty members
+
+abstract class Usuario {
+  - id : String
+  - nombre : String
+  - correo : String
+  - contrasenaHash : String
+  - telefono : String
+  - rol : Rol
+  - activo : boolean
+  # Usuario(nombre, correo, contrasenaHash, telefono, rol)
+  + verificarContrasena(contrasenaPlana : String, codificador : PasswordEncoder) : boolean
+  + desactivar() : void
+  + getters / setters
+}
+
+class Paciente {
+  - documento : String
+  - fechaNacimiento : LocalDate
+  - tipoPaciente : TipoPaciente
+  + Paciente(nombre, correo, contrasenaHash, telefono, documento, fechaNacimiento, tipoPaciente)
+  + getters / setters
+}
+
+class Medico <<Experto, Creador>> {
+  - registroMedico : String
+  - consultorio : String
+  + Medico(nombre, correo, contrasenaHash, telefono, registroMedico, especialidad, consultorio)
+  + atiendeEn(inicio : LocalDateTime) : boolean
+  + franjasDelDia(fecha : LocalDate) : List<LocalDateTime>
+  + definirHorarios(horarios : List<HorarioAtencion>) : void
+  + crearCita(paciente : Paciente, fechaHora : LocalDateTime, motivo : String, ahora : LocalDateTime) : Cita
+  + getters / setters
+}
+
+class Recepcionista {
+  + Recepcionista(nombre, correo, contrasenaHash, telefono)
+}
+
+class Administrador {
+  + Administrador(nombre, correo, contrasenaHash, telefono)
+}
+
+class HorarioAtencion {
+  - diaSemana : DayOfWeek
+  - horaInicio : LocalTime
+  - horaFin : LocalTime
+  + HorarioAtencion(diaSemana, horaInicio, horaFin)
+  + esValido() : boolean
+  + franjas() : List<LocalTime>
+  + contiene(inicio : LocalDateTime) : boolean
+  + getters / setters
+}
+
+class Especialidad <<Experto>> {
+  - id : String
+  - nombre : String
+  - descripcion : String
+  - tarifa : long
+  - activa : boolean
+  + Especialidad(nombre, descripcion, tarifa)
+  + valorPara(tipo : TipoPaciente) : long
+  + desactivar() : void
+  + getters / setters
+}
+
+class Cita <<Experto>> {
+  + {static} DURACION_MINUTOS : int = 30
+  + {static} HORAS_MINIMAS_PARA_CAMBIOS : int = 24
+  + {static} MAXIMO_REPROGRAMACIONES : int = 2
+  - id : String
+  - fechaHora : LocalDateTime
+  - estado : EstadoCita
+  - motivo : String
+  - valorPagado : long
+  - referenciaPago : String
+  - reembolsada : boolean
+  - reprogramaciones : int
+  - notasAtencion : String
+  - creadaEn : LocalDateTime
+  + Cita(paciente, medico, especialidad, fechaHora, motivo, valorPagado, creadaEn)
+  + puedeCancelarse(ahora) : boolean
+  + puedeReprogramarse(ahora) : boolean
+  + cancelar(ahora) : void
+  + reprogramar(nuevaFechaHora, ahora) : void
+  + registrarAtencion(notas, ahora) : void
+  + marcarInasistencia(ahora) : void
+  + registrarPago(referencia) : void
+  + valorRecaudado() : long
+  + getters / setters
+}
+
+class ReporteCitas <<Creador>> {
+  - desde : LocalDate
+  - hasta : LocalDate
+  + ReporteCitas(desde, hasta, citas : List<Cita>)
+  + totalCitas() : int
+  + totalRecaudado() : long
+}
+
+class LineaReporte {
+  - especialidad : String
+  - programadas : int
+  - atendidas : int
+  - canceladas : int
+  - noAsistio : int
+  - recaudado : long
+  + LineaReporte(especialidad)
+  + registrar(cita : Cita) : void
+  + getTotal() : int
+}
+
+interface EstrategiaTarifa <<interface>> <<Polimorfismo / Strategy>> {
+  + CARGO_ADMINISTRATIVO : long = 5000
+  + descuento() : double
+  + calcular(tarifa : long) : long
+}
+class TarifaParticular {
+  + DESCUENTO : double = 0.0
+  + descuento() : double
+}
+class TarifaConvenio {
+  + DESCUENTO : double = 0.15
+  + descuento() : double
+}
+class TarifaPrepagada {
+  + DESCUENTO : double = 0.30
+  + descuento() : double
+}
+class FabricaTarifas <<Fabricación pura / Simple Factory>> {
+  + {static} para(tipo : TipoPaciente) : EstrategiaTarifa
+}
+
+interface PasarelaPagos <<interface>> <<Variaciones protegidas>> {
+  + cobrar(numeroTarjeta : String, valor : long, concepto : String) : ResultadoPago
+  + reembolsar(referencia : String, valor : long) : boolean
+}
+class PasarelaPagosSimulada {
+  + cobrar(...) : ResultadoPago
+  + reembolsar(...) : boolean
+}
+class ResultadoPago <<record>> {
+  + aprobado : boolean
+  + referencia : String
+  + mensaje : String
+}
+
+enum Rol {
+  PACIENTE
+  MEDICO
+  RECEPCIONISTA
+  ADMINISTRADOR
+}
+enum TipoPaciente {
+  PARTICULAR
+  CONVENIO
+  PREPAGADA
+}
+enum EstadoCita {
+  PROGRAMADA
+  CANCELADA
+  ATENDIDA
+  NO_ASISTIO
+}
+
+Usuario <|-- Paciente
+Usuario <|-- Medico
+Usuario <|-- Recepcionista
+Usuario <|-- Administrador
+Usuario --> "1" Rol : rol
+
+Paciente --> "1" TipoPaciente : tipoPaciente
+Medico "0..*" --> "1" Especialidad : pertenece a
+Medico "1" *-- "0..*" HorarioAtencion : horarios
+Medico "1" -- "0..*" Cita : atiende >
+Paciente "1" -- "0..*" Cita : agenda >
+Cita "0..*" --> "1" Especialidad : especialidad
+Cita --> "1" EstadoCita : estado
+
+ReporteCitas "1" *-- "0..*" LineaReporte : lineas
+ReporteCitas ..> Cita : resume
+
+EstrategiaTarifa <|.. TarifaParticular
+EstrategiaTarifa <|.. TarifaConvenio
+EstrategiaTarifa <|.. TarifaPrepagada
+FabricaTarifas ..> EstrategiaTarifa : crea
+FabricaTarifas ..> TipoPaciente
+Especialidad ..> FabricaTarifas : usa
+
+PasarelaPagos <|.. PasarelaPagosSimulada
+PasarelaPagos ..> ResultadoPago
+
+note bottom of EstrategiaTarifa
+  RN_01: valor = tarifa − descuento + cargo administrativo
+  RN_02: Particular 0 %, Convenio 15 %, Prepagada 30 %
+  RN_03: cargo administrativo $5.000
+end note
+
+note right of Cita
+  RN_08: cancelar o reprogramar con más de 24 h
+  RN_11: máximo 2 reprogramaciones
+  RN_12: atención solo cuando la cita ya empezó
+end note
+
+legend top left
+  <b>Patrones GRASP y GoF</b>
+  Experto: Usuario.verificarContrasena, Especialidad.valorPara, Medico.atiendeEn, Cita.puedeCancelarse
+  Creador: Medico.crearCita crea Cita; ReporteCitas crea LineaReporte
+  Polimorfismo / Strategy: EstrategiaTarifa y sus 3 tarifas
+  Fabricación pura / Simple Factory: FabricaTarifas
+  Variaciones protegidas / Indirección: PasarelaPagos
+endlegend
+@enduml

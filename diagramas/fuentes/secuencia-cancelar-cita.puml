@@ -1,0 +1,42 @@
+@startuml secuencia-cancelar-cita
+' Secuencia de HU_011 Cancelar cita (RF_013, RN_08, RN_10).
+skinparam defaultFontName Arial
+skinparam shadowing false
+autonumber
+
+actor Paciente
+participant "CitaController" as C
+participant "CitaServicio" as S
+participant "CitaRepositorio" as R
+participant "Cita" as CI
+participant "PasarelaPagos" as P
+database MongoDB
+
+Paciente -> C : PUT /api/citas/{id}/cancelar
+C -> S : cancelar(id, usuarioActual)
+S -> R : findById(id)
+R -> MongoDB : consulta
+alt no existe
+  R --> S : vacío
+  C --> Paciente : 404 "La cita no existe"
+else existe
+  R --> S : cita
+  alt la cita es de otro paciente
+    C --> Paciente : 403 "Solo el paciente de la cita..."
+  else es su cita
+    S -> CI : cancelar(ahora)
+    alt faltan 24 horas o menos
+      CI --> S : ReglaNegocioException
+      C --> Paciente : 422 "Solo se puede cancelar con más de 24 horas"
+    else faltan más de 24 horas
+      CI -> CI : estado = CANCELADA
+      S -> P : reembolsar(referenciaPago, valorPagado)
+      P --> S : true
+      S -> CI : marcarReembolsada()
+      S -> R : save(cita)
+      R -> MongoDB : update
+      C --> Paciente : 200 OK + cita cancelada
+    end
+  end
+end
+@enduml

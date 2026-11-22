@@ -1,0 +1,43 @@
+@startuml vista-despliegue
+' Vista de despliegue: arquitectura de tres capas en la nube.
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam node {
+  BackgroundColor #E0F2F1
+  BorderColor #0F766E
+}
+
+node "Dispositivo del usuario\n(celular o computador)" as DISP <<device>> {
+  node "Navegador web" as NAV <<executionEnvironment>> {
+    artifact "App CitaSalud\n(React, HTML/CSS/JS)" as APPJS
+  }
+}
+
+node "Vercel\n(capa de presentación)" as VER <<device>> {
+  node "CDN / servidor estático" as CDN <<executionEnvironment>> {
+    artifact "frontend/dist" as DIST
+  }
+}
+
+node "Render\n(capa de negocio)" as REN <<device>> {
+  node "Contenedor Docker\nEclipse Temurin JRE 17" as DOCK <<executionEnvironment>> {
+    artifact "citasalud-backend-1.0.0.jar\n(Spring Boot 3)" as JAR
+    artifact "PasarelaPagosSimulada" as PAS
+  }
+}
+
+node "MongoDB Atlas\n(capa de datos)" as ATL <<device>> {
+  database "Base citasalud\n(usuarios, especialidades, citas)" as BD
+}
+
+node "GitHub" as GH <<device>> {
+  artifact "Repositorio + GitHub Actions (CI)" as REPO
+}
+
+NAV --> CDN : HTTPS (descarga la app)
+NAV --> DOCK : HTTPS / JSON\nAPI REST + JWT
+DOCK --> ATL : TCP 27017 / TLS\n(MONGODB_URI)
+JAR ..> PAS : interfaz PasarelaPagos
+REPO ..> REN : despliegue automático al hacer push a main
+REPO ..> VER : despliegue automático
+@enduml
