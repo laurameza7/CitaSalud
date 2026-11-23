@@ -1,6 +1,6 @@
 # CitaSalud
 
-Plataforma web y móvil para agendar y gestionar citas médicas. Los pacientes consultan especialidades, médicos y horarios libres, agendan y pagan su cita, y la pueden cancelar o reprogramar. Los médicos definen su horario, ven su agenda y registran la atención. La recepción agenda por los pacientes que llaman o llegan, y el administrador gestiona la clínica y consulta reportes.
+Plataforma web y móvil para agendar y gestionar citas médicas. Los pacientes consultan especialidades, médicos y horarios libres, agendan y pagan su cita, la pueden cancelar o reprogramar, y reciben un recordatorio un día antes. Los médicos definen su horario, ven su agenda y registran la atención. La recepción agenda por los pacientes que llaman o llegan, y el administrador gestiona la clínica y consulta reportes.
 
 Proyecto final del curso **Diseño de Software**.
 
@@ -11,10 +11,10 @@ Proyecto final del curso **Diseño de Software**.
 | 1. Cuenta | HU_001 Registrarse como paciente · HU_002 Iniciar sesión |
 | 2. Administración | HU_003 Especialidades · HU_004 Médicos · HU_005 Recepcionistas · HU_006 Horario de atención |
 | 3. Consulta | HU_007 Especialidades y médicos · HU_008 Disponibilidad |
-| 4. Citas | HU_009 Agendar · HU_010 Mis citas · HU_011 Cancelar · HU_012 Reprogramar · HU_013 Agendar por un paciente |
+| 4. Citas | HU_009 Agendar · HU_010 Mis citas · HU_011 Cancelar · HU_012 Reprogramar · HU_013 Agendar por un paciente · HU_017 Recordatorios |
 | 5. Atención y reportes | HU_014 Agenda del día · HU_015 Registrar atención · HU_016 Reporte de citas |
 
-Detalle: [docs/historias](docs/historias/00-resumen.md) (16 HU, 43 puntos) y [docs/02-requisitos.md](docs/02-requisitos.md) (RF_001 a RF_018, RNF_001 a RNF_012).
+Detalle: [docs/historias](docs/historias/00-resumen.md) (17 HU, 46 puntos) y [docs/02-requisitos.md](docs/02-requisitos.md) (RF_001 a RF_019, RNF_001 a RNF_012).
 
 ### Reglas de negocio principales
 
@@ -24,6 +24,7 @@ Detalle: [docs/historias](docs/historias/00-resumen.md) (16 HU, 43 puntos) y [do
 - Un paciente no puede tener dos citas a la misma hora ni dos programadas en la misma especialidad.
 - Cancelar o reprogramar solo con **más de 24 horas** de anticipación; máximo **2 reprogramaciones**.
 - La cita solo queda programada si la **pasarela aprueba el pago**; al cancelar se pide el reembolso.
+- Cada cita programada recibe un **recordatorio** cuando faltan 24 horas o menos (una tarea programada revisa cada 15 minutos).
 
 ## Tecnologías
 
@@ -31,7 +32,7 @@ Detalle: [docs/historias](docs/historias/00-resumen.md) (16 HU, 43 puntos) y [do
 |---|---|
 | Backend | Java 17, Spring Boot 3.3.5 (Web, Data MongoDB, Security, Validation), JWT (jjwt 0.12.6), BCrypt, Swagger (springdoc 2.6.0) |
 | Base de datos | MongoDB 7 |
-| Pruebas | JUnit 5 + Mockito (23 pruebas) y Postman/Newman (55 peticiones, 78 validaciones) |
+| Pruebas | JUnit 5 + Mockito (30 pruebas) y Postman/Newman (61 peticiones, 87 validaciones) |
 | Frontend | React 18 + Vite, diseño adaptable para celular |
 | Infraestructura | Docker, docker-compose, GitHub Actions, Render, Vercel, MongoDB Atlas |
 
@@ -42,11 +43,11 @@ Arquitectura en capas con DTO: **Controller → Service → Repository → Model
 ```
 backend/src/main/java/com/citasalud/
 ├── controller/     Endpoints REST (9 controllers)
-├── service/        Lógica y reglas de negocio (8 servicios)
-├── repository/     Interfaces Spring Data MongoDB (3)
-├── model/          Dominio: Usuario (abstracta) y sus hijas, Especialidad, Cita, HorarioAtencion, ReporteCitas, enums
+├── service/        Lógica y reglas de negocio (9 servicios)
+├── repository/     Interfaces Spring Data MongoDB (4)
+├── model/          Dominio: Usuario (abstracta) y sus hijas, Especialidad, Cita, Recordatorio, HorarioAtencion, ReporteCitas, enums
 │   └── tarifa/     EstrategiaTarifa, FabricaTarifas y 3 tarifas (patrón Strategy)
-├── integracion/    PasarelaPagos (interfaz) y PasarelaPagosSimulada
+├── integracion/    PasarelaPagos y NotificadorRecordatorios (interfaces) con sus versiones simuladas
 ├── dto/            *Request / *Response
 ├── security/       JWT (FiltroJwt, JwtServicio, UsuarioActual)
 ├── exception/      Excepciones y ManejadorErrores
@@ -115,6 +116,7 @@ npm run dev                      # app en http://localhost:5173
 | `JWT_SECRET` | Clave para firmar tokens (mínimo 32 caracteres) | Una clave solo para desarrollo |
 | `CORS_ORIGENES` | URL del frontend | `http://localhost:5173` |
 | `DATOS_PRUEBA` | Cargar datos de prueba si la base está vacía | `true` |
+| `RECORDATORIOS_INTERVALO_MS` | Cada cuánto se revisan las citas para crear recordatorios | `900000` (15 minutos) |
 
 Las credenciales reales **nunca** se suben al repositorio (ver `backend/.env.example`).
 
@@ -127,7 +129,7 @@ Las credenciales reales **nunca** se suben al repositorio (ver `backend/.env.exa
 | Médico (Medicina general) | carlos.ruiz@citasalud.com | Medico123* |
 | Médico (Pediatría) | andres.ortega@citasalud.com | Medico123* |
 | Médico (Dermatología) | sofia.delgado@citasalud.com | Medico123* |
-| Paciente (Convenio) | ana.perez@correo.com | Paciente123* |
+| Paciente (Convenio, tiene una cita mañana con recordatorio) | ana.perez@correo.com | Paciente123* |
 | Paciente (Particular) | luis.martinez@correo.com | Paciente123* |
 | Paciente (Prepagada) | camila.rosero@correo.com | Paciente123* |
 
@@ -157,13 +159,16 @@ Pasarela simulada: se aprueba cualquier tarjeta de 16 dígitos, salvo las que te
 | GET | `/api/citas/agenda?fecha=` | Médico | HU_014 |
 | PUT | `/api/citas/{id}/atencion` · `/inasistencia` | Médico de la cita | HU_015 |
 | GET | `/api/reportes/citas?desde=&hasta=` | Administrador | HU_016 |
+| GET | `/api/recordatorios/mios` | Paciente | HU_017 |
+| PUT | `/api/recordatorios/{id}/leido` | Paciente (el suyo) | HU_017 |
+| POST | `/api/recordatorios/generar` | Recepcionista, Administrador | HU_017 |
 
 Errores con mensaje en español: 400 (datos inválidos), 401 (sin sesión), 402 (pago rechazado), 403 (sin permiso), 404 (no existe), 409 (conflicto: correo repetido, franja ocupada), 422 (regla de negocio).
 
 ## Pruebas
 
 ```bash
-cd backend && mvn test           # 23 pruebas JUnit
+cd backend && mvn test           # 30 pruebas JUnit
 newman run postman/CitaSalud.postman_collection.json -e postman/CitaSalud-Local.postman_environment.json
 ```
 

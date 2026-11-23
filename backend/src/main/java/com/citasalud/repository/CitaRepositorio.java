@@ -28,4 +28,6 @@ public interface CitaRepositorio extends MongoRepository<Cita, String> {
     List<Cita> findByMedicoAndFechaHoraBetweenOrderByFechaHoraAsc(Medico medico, LocalDateTime desde, LocalDateTime hasta);
 
     List<Cita> findByFechaHoraBetween(LocalDateTime desde, LocalDateTime hasta);
+
+    List<Cita> findByEstadoAndFechaHoraBetween(EstadoCita estado, LocalDateTime desde, LocalDateTime hasta);
 }

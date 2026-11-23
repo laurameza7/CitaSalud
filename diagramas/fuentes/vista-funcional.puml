@@ -32,6 +32,7 @@ component "CitaSalud API" as API <<subsystem>> {
   component "Recepción\n(RecepcionistaController,\nPacienteController)\nHU_005, HU_013" as REC
   component "Citas\n(CitaController, CitaServicio)\nHU_009 a HU_015" as CITAS
   component "Reportes\n(ReporteController, ReporteServicio)\nHU_016" as REP
+  component "Recordatorios\n(RecordatorioController, RecordatorioServicio,\nNotificadorRecordatorios)\nHU_017" as RECO
   component "Integración de pagos\n(PasarelaPagos)\nRNF_012" as INT
   component "Persistencia\n(Repositorios Spring Data)" as PER
 
@@ -49,7 +50,7 @@ interface "Cobro y reembolso" as ICobro
 interface "Driver MongoDB" as IMongo
 
 component "Pasarela de pagos\n(externa, simulada)" as PAS
-database "MongoDB\n(usuarios, especialidades, citas)" as DB
+database "MongoDB\n(usuarios, especialidades,\ncitas, recordatorios)" as DB
 
 AP --> UI
 AM --> UI
@@ -66,6 +67,7 @@ pRest ..> MED : <<delegate>>
 pRest ..> REC : <<delegate>>
 pRest ..> CITAS : <<delegate>>
 pRest ..> REP : <<delegate>>
+pRest ..> RECO : <<delegate>>
 
 ' Interfaces provistas (lollipop) y requeridas (socket) entre componentes
 AUTH - IAuth
@@ -83,6 +85,7 @@ INT - IPag
 CITAS --( IPag
 PER - IRepo
 CITAS --( IRepo
+RECO --( IRepo
 
 INT ..> pPagoExt : <<delegate>>
 PER ..> pBDExt : <<delegate>>
@@ -93,7 +96,7 @@ IMongo - DB
 note bottom of PER
   Persistencia provee IRepositorios.
   La requieren Autenticación, Especialidades,
-  Médicos, Disponibilidad, Recepción, Citas y Reportes
-  (en el diagrama solo se dibuja la de Citas para no saturarlo).
+  Médicos, Disponibilidad, Recepción, Citas, Reportes y Recordatorios
+  (en el diagrama solo se dibujan Citas y Recordatorios para no saturarlo).
 end note
 @enduml

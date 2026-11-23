@@ -2461,6 +2461,265 @@
       ]
     },
     {
+      "name": "HU_017 Recibir recordatorios de citas",
+      "description": "",
+      "item": [
+        {
+          "name": "Generar recordatorios ahora (recepción)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve cuántos creó', () => pm.expect(pm.response.json().recordatoriosCreados).to.be.at.least(0));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenRecepcion}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recordatorios/generar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recordatorios",
+                "generar"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Mis recordatorios (Ana tiene una cita mañana)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Es una lista', () => pm.expect(pm.response.json()).to.be.an('array'));",
+                  "const lista = pm.response.json();",
+                  "pm.collectionVariables.set('recordatorioId', lista.length ? lista[0].id : '');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAna}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recordatorios/mios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recordatorios",
+                "mios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Marcar recordatorio como leído",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Queda leído', () => pm.expect(pm.response.json().leido).to.be.true);"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('recordatorioId')) { pm.execution.skipRequest(); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAna}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recordatorios/{{recordatorioId}}/leido",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recordatorios",
+                "{{recordatorioId}}",
+                "leido"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Otro paciente no puede marcarlo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('recordatorioId')) { pm.execution.skipRequest(); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenPaciente}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recordatorios/{{recordatorioId}}/leido",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recordatorios",
+                "{{recordatorioId}}",
+                "leido"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Un médico no tiene recordatorios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenMedico}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recordatorios/mios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recordatorios",
+                "mios"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Un paciente no puede generarlos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Responde 403', () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenAna}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/recordatorios/generar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "recordatorios",
+                "generar"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "99. Limpieza de datos de prueba",
       "description": "",
       "item": [

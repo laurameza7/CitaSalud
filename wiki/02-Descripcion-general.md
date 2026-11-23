@@ -4,7 +4,7 @@
 | Actor | Tipo | Qué hace |
 |---|---|---|
 | Visitante | Persona sin cuenta | Consulta especialidades, médicos y disponibilidad; se registra |
-| Paciente | Usuario registrado | Agenda y paga, consulta, cancela y reprograma sus citas |
+| Paciente | Usuario registrado | Agenda y paga, consulta, cancela y reprograma sus citas; recibe recordatorios |
 | Médico | Usuario registrado | Define su horario, consulta su agenda, registra atención o inasistencia |
 | Recepcionista | Usuario registrado | Busca pacientes y agenda, cancela o reprograma por ellos |
 | Administrador | Usuario registrado | Gestiona especialidades, médicos y recepcionistas; consulta reportes |

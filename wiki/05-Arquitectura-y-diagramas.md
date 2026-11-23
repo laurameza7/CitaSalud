@@ -27,6 +27,7 @@ Los archivos `diagramas/vista-*.png`, `diagramas/secuencia-*.png` y `diagramas/f
 | Citas | `CitaController`, `CitaServicio` | HU_009 a HU_015 | RF_009 a RF_017 |
 | Reportes | `ReporteController`, `ReporteServicio` | HU_016 | RF_018 |
 | Integración de pagos | `PasarelaPagos`, `PasarelaPagosSimulada` | HU_009, HU_011 | RF_011, RF_013, RNF_012 |
+| Recordatorios | `RecordatorioController`, `RecordatorioServicio`, `NotificadorRecordatorios` | HU_017 | RF_019, RNF_012 |
 | Persistencia | `UsuarioRepositorio`, `EspecialidadRepositorio`, `CitaRepositorio` | Todas | RNF_002 |
 
 ## Diagramas (Visual Paradigm)

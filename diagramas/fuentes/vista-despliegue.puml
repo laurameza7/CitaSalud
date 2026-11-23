@@ -27,7 +27,7 @@ node "Render\n(capa de negocio)" as REN <<device>> {
 }
 
 node "MongoDB Atlas\n(capa de datos)" as ATL <<device>> {
-  database "Base citasalud\n(usuarios, especialidades, citas)" as BD
+  database "Base citasalud\n(usuarios, especialidades,\ncitas, recordatorios)" as BD
 }
 
 node "GitHub" as GH <<device>> {

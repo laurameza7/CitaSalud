@@ -24,6 +24,7 @@ Cada requisito funcional sale de una historia de usuario (columna HU) y está im
 | RF_016 | El sistema debe mostrar al médico sus citas de una fecha ordenadas por hora. | HU_014 | Alta | `GET /api/citas/agenda?fecha=` |
 | RF_017 | El sistema debe permitir al médico de la cita registrar las notas de atención o marcar la inasistencia, solo cuando la hora de la cita ya llegó (RN_12). | HU_015 | Alta | `PUT /api/citas/{id}/atencion`, `PUT /api/citas/{id}/inasistencia` |
 | RF_018 | El sistema debe generar un reporte por especialidad con la cantidad de citas por estado y el total recaudado en un rango de fechas. | HU_016 | Media | `GET /api/reportes/citas?desde=&hasta=` |
+| RF_019 | El sistema debe generar automáticamente un recordatorio para cada cita programada cuando falten 24 horas o menos, mostrarlo al paciente y permitirle marcarlo como leído (RN_13). | HU_017 | Media | `GET /api/recordatorios/mios`, `PUT /api/recordatorios/{id}/leido`, `POST /api/recordatorios/generar` |
 
 ## Requisitos no funcionales
 
@@ -40,7 +41,7 @@ Cada requisito funcional sale de una historia de usuario (columna HU) y está im
 | RNF_009 | Portabilidad | El backend corre en cualquier máquina con Docker y se puede desplegar en la nube. | `Dockerfile`, `docker-compose.yml` |
 | RNF_010 | Documentación | La API se documenta con Swagger y el proyecto con README y wiki. | `/swagger-ui.html`, `README.md`, `wiki/` |
 | RNF_011 | Plataforma | La aplicación se usa desde el navegador del computador o del celular (diseño adaptable). | `frontend/` |
-| RNF_012 | Integración | La pasarela de pagos se usa detrás de una interfaz propia para poder cambiarla sin tocar la lógica de citas. | `integracion/PasarelaPagos` |
+| RNF_012 | Integración | La pasarela de pagos y el canal de recordatorios se usan detrás de interfaces propias para poder cambiarlos sin tocar la lógica de citas. | `integracion/PasarelaPagos`, `integracion/NotificadorRecordatorios` |
 
 ## Matriz de trazabilidad HU → RF → componentes
 
@@ -62,3 +63,4 @@ Cada requisito funcional sale de una historia de usuario (columna HU) y está im
 | HU_014 | RF_016 | `CitaController` | `CitaServicio` | `Cita` |
 | HU_015 | RF_017 | `CitaController` | `CitaServicio` | `Cita` |
 | HU_016 | RF_018 | `ReporteController` | `ReporteServicio` | `ReporteCitas`, `LineaReporte` |
+| HU_017 | RF_019 | `RecordatorioController` | `RecordatorioServicio` | `Recordatorio`, `Cita`, `NotificadorRecordatorios` |

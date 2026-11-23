@@ -206,6 +206,21 @@ items = [
         peticion("Rango invertido", "GET", "/api/reportes/citas?desde={{finRango}}&hasta={{inicioMes}}", token="tokenAdmin", estado=422),
         peticion("Solo el administrador", "GET", "/api/reportes/citas?desde={{inicioMes}}&hasta={{finRango}}", token="tokenAna", estado=403),
     ]),
+    carpeta("HU_017 Recibir recordatorios de citas", [
+        peticion("Generar recordatorios ahora (recepción)", "POST", "/api/recordatorios/generar", token="tokenRecepcion",
+                 pruebas="pm.test('Devuelve cuántos creó', () => pm.expect(pm.response.json().recordatoriosCreados).to.be.at.least(0));"),
+        peticion("Mis recordatorios (Ana tiene una cita mañana)", "GET", "/api/recordatorios/mios", token="tokenAna",
+                 pruebas="pm.test('Es una lista', () => pm.expect(pm.response.json()).to.be.an('array'));\n"
+                 "const lista = pm.response.json();\n"
+                 "pm.collectionVariables.set('recordatorioId', lista.length ? lista[0].id : '');"),
+        peticion("Marcar recordatorio como leído", "PUT", "/api/recordatorios/{{recordatorioId}}/leido", token="tokenAna",
+                 previo="if (!pm.collectionVariables.get('recordatorioId')) { pm.execution.skipRequest(); }",
+                 pruebas="pm.test('Queda leído', () => pm.expect(pm.response.json().leido).to.be.true);"),
+        peticion("Otro paciente no puede marcarlo", "PUT", "/api/recordatorios/{{recordatorioId}}/leido", token="tokenPaciente", estado=403,
+                 previo="if (!pm.collectionVariables.get('recordatorioId')) { pm.execution.skipRequest(); }"),
+        peticion("Un médico no tiene recordatorios", "GET", "/api/recordatorios/mios", token="tokenMedico", estado=403),
+        peticion("Un paciente no puede generarlos", "POST", "/api/recordatorios/generar", token="tokenAna", estado=403),
+    ]),
     carpeta("99. Limpieza de datos de prueba", [
         peticion("Desactivar médico de prueba", "DELETE", "/api/medicos/{{medicoNuevoId}}", token="tokenAdmin", estado=204),
         peticion("Desactivar especialidad de prueba", "DELETE", "/api/especialidades/{{especialidadNuevaId}}", token="tokenAdmin", estado=204),

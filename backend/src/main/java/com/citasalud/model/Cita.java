@@ -22,6 +22,8 @@ public class Cita {
     public static final int HORAS_MINIMAS_PARA_CAMBIOS = 24;
     /** Máximo de veces que se puede reprogramar una cita (RN_11). */
     public static final int MAXIMO_REPROGRAMACIONES = 2;
+    /** Horas antes de la cita en que se envía el recordatorio (RN_13). */
+    public static final int HORAS_ANTES_RECORDATORIO = 24;
 
     @Id
     private String id;
@@ -64,6 +66,12 @@ public class Cita {
     /** RN_08: faltan más de 24 horas para la cita. */
     public boolean faltanMasDeHorasMinimas(LocalDateTime ahora) {
         return ahora.plusHours(HORAS_MINIMAS_PARA_CAMBIOS).isBefore(fechaHora);
+    }
+
+    /** RN_13: la cita sigue programada, aún no pasa y faltan 24 horas o menos. */
+    public boolean necesitaRecordatorio(LocalDateTime ahora) {
+        return estaProgramada() && fechaHora.isAfter(ahora)
+                && !ahora.plusHours(HORAS_ANTES_RECORDATORIO).isBefore(fechaHora);
     }
 
     public boolean puedeCancelarse(LocalDateTime ahora) {

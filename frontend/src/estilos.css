@@ -54,6 +54,8 @@ textarea { min-height: 70px; width: 100%; }
 .estado.CANCELADA { background: #fee2e2; color: var(--peligro); }
 .estado.ATENDIDA { background: #dcfce7; color: var(--exito); }
 .estado.NO_ASISTIO { background: #fef3c7; color: #92400e; }
+.recordatorio { border-left: 4px solid var(--primario); }
+.recordatorio.leido { border-left-color: var(--borde); opacity: .8; }
 
 .mensaje { padding: 10px; border-radius: 8px; }
 .mensaje.error { background: #fee2e2; color: var(--peligro); }

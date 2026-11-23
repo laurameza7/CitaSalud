@@ -83,7 +83,7 @@ public class DatosIniciales implements CommandLineRunner {
         Medico sofia = medico("Sofía Delgado", "sofia.delgado@citasalud.com", "RM-30987", dermatologia, "Consultorio 301",
                 List.of(new HorarioAtencion(DayOfWeek.TUESDAY, LocalTime.of(9, 0), LocalTime.of(13, 0)),
                         new HorarioAtencion(DayOfWeek.THURSDAY, LocalTime.of(14, 0), LocalTime.of(18, 0))));
-        medico("Jorge Erazo", "jorge.erazo@citasalud.com", "RM-40112", cardiologia, "Consultorio 401",
+        Medico jorge = medico("Jorge Erazo", "jorge.erazo@citasalud.com", "RM-40112", cardiologia, "Consultorio 401",
                 List.of(new HorarioAtencion(DayOfWeek.MONDAY, LocalTime.of(8, 0), LocalTime.of(12, 0)),
                         new HorarioAtencion(DayOfWeek.WEDNESDAY, LocalTime.of(8, 0), LocalTime.of(12, 0))));
 
@@ -108,6 +108,10 @@ public class DatosIniciales implements CommandLineRunner {
         if (hoy.getDayOfWeek() != DayOfWeek.SATURDAY && hoy.getDayOfWeek() != DayOfWeek.SUNDAY) {
             cita(luis, carlos, hoy.atTime(8, 0), "Chequeo anual", EstadoCita.PROGRAMADA);
         }
+        // Una cita de Ana dentro de las próximas 24 horas, para que aparezca su recordatorio (HU_017).
+        LocalDateTime ahora = LocalDateTime.now(reloj);
+        LocalDateTime proximaCita = ahora.getHour() < 8 ? hoy.atTime(10, 0) : hoy.plusDays(1).atTime(8, 0);
+        cita(ana, jorge, proximaCita, "Control de presión arterial", EstadoCita.PROGRAMADA);
         log.info("Datos de prueba cargados");
     }
 

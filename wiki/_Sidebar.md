@@ -20,6 +20,7 @@
   - [[HU_014: Consultar agenda del día|HU_014]]
   - [[HU_015: Registrar atención o inasistencia|HU_015]]
   - [[HU_016: Consultar reporte de citas|HU_016]]
+  - [[HU_017: Recibir recordatorios de citas|HU_017]]
 - [[04 Requisitos|04-Requisitos]]
 - [[05 Arquitectura y diagramas|05-Arquitectura-y-diagramas]]
 - [[06 Patrones de diseño|06-Patrones-de-diseno]]

@@ -26,8 +26,8 @@ usecase "\n   CitaSalud   \n" as S
 V --> S : consultar especialidades,\nmédicos y disponibilidad;\nregistrarse (HU_001, HU_007, HU_008)
 S --> V : especialidades, tarifas,\nmédicos y franjas libres
 
-P --> S : iniciar sesión, agendar y pagar,\ncancelar, reprogramar\n(HU_002, HU_009 a HU_012)
-S --> P : token, confirmación de la cita,\nvalor pagado, lista de mis citas
+P --> S : iniciar sesión, agendar y pagar,\ncancelar, reprogramar, ver recordatorios\n(HU_002, HU_009 a HU_012, HU_017)
+S --> P : token, confirmación de la cita,\nvalor pagado, mis citas y\nrecordatorios 24 h antes
 
 M --> S : definir horario, consultar agenda,\nregistrar atención o inasistencia\n(HU_006, HU_014, HU_015)
 S --> M : agenda del día con pacientes y motivos

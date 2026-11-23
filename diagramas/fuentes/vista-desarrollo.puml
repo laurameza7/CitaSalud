@@ -55,6 +55,11 @@ package "Presentacion_Controller" #E0F2F1 {
   class ReporteController {
     + citas(desde, hasta) : ReporteResponse
   }
+  class RecordatorioController {
+    + mios() : List<RecordatorioResponse>
+    + marcarLeido(id) : RecordatorioResponse
+    + generar() : Map<String, Integer>
+  }
 }
 
 package "Negocio_Service" #F0FDFA {
@@ -93,6 +98,14 @@ package "Negocio_Service" #F0FDFA {
   class ReporteServicio {
     + generar(desde, hasta) : ReporteResponse
   }
+  class RecordatorioServicio {
+    + generarRecordatorios() : int  <<@Scheduled>>
+    + misRecordatorios(actual) : List<RecordatorioResponse>
+    + marcarLeido(id, actual) : RecordatorioResponse
+  }
+  interface NotificadorRecordatorios <<interface>> {
+    + enviar(recordatorio) : void
+  }
   interface PasarelaPagos <<interface>> {
     + cobrar(...) : ResultadoPago
     + reembolsar(...) : boolean
@@ -115,6 +128,11 @@ package "Datos_Repository" #ECFEFF {
     + existsByPacienteAndEspecialidadAndEstado(...) : boolean
     + findByPacienteOrderByFechaHoraDesc(paciente) : List<Cita>
     + findByFechaHoraBetween(desde, hasta) : List<Cita>
+    + findByEstadoAndFechaHoraBetween(estado, desde, hasta) : List<Cita>
+  }
+  interface RecordatorioRepositorio <<interface>> {
+    + existsByCitaAndFechaCita(cita, fechaCita) : boolean
+    + findByPacienteIdOrderByFechaCitaAsc(pacienteId) : List<Recordatorio>
   }
   interface "MongoRepository<T, String>" as MongoRepository <<interface>>
 }
@@ -129,6 +147,7 @@ package "Modelo_de_Dominio" #FFFFFF {
   class Cita
   class HorarioAtencion
   class ReporteCitas
+  class Recordatorio
   interface EstrategiaTarifa <<interface>>
 }
 
@@ -140,6 +159,7 @@ RecepcionistaController --> RecepcionistaServicio : delega
 PacienteController --> PacienteServicio : delega
 CitaController --> CitaServicio : delega
 ReporteController --> ReporteServicio : delega
+RecordatorioController --> RecordatorioServicio : delega
 
 AuthServicio --> UsuarioRepositorio : guarda y consulta
 EspecialidadServicio --> EspecialidadRepositorio : guarda y consulta
@@ -153,10 +173,14 @@ CitaServicio --> CitaRepositorio : guarda y consulta
 CitaServicio --> DisponibilidadServicio : usa
 CitaServicio --> PasarelaPagos : cobra y reembolsa
 ReporteServicio --> CitaRepositorio : consulta
+RecordatorioServicio --> CitaRepositorio : consulta
+RecordatorioServicio --> RecordatorioRepositorio : guarda y consulta
+RecordatorioServicio --> NotificadorRecordatorios : envía
 
 MongoRepository <|-- UsuarioRepositorio
 MongoRepository <|-- EspecialidadRepositorio
 MongoRepository <|-- CitaRepositorio
+MongoRepository <|-- RecordatorioRepositorio
 
 Usuario <|-- Paciente
 Usuario <|-- Medico
@@ -169,6 +193,8 @@ EspecialidadServicio ..> EstrategiaTarifa : usa
 UsuarioRepositorio ..> Usuario : persiste
 EspecialidadRepositorio ..> Especialidad : persiste
 CitaRepositorio ..> Cita : persiste
+RecordatorioServicio ..> Recordatorio : crea y devuelve
+RecordatorioRepositorio ..> Recordatorio : persiste
 
 note right of Presentacion_Controller
   Los controllers reciben y devuelven DTO

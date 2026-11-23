@@ -78,13 +78,16 @@ Pasarela simulada: se aprueba cualquier tarjeta de 16 dígitos, salvo las que te
 | GET | `/api/citas/agenda?fecha=` | Médico | HU_014 |
 | PUT | `/api/citas/{id}/atencion` · `/inasistencia` | Médico de la cita | HU_015 |
 | GET | `/api/reportes/citas?desde=&hasta=` | Administrador | HU_016 |
+| GET | `/api/recordatorios/mios` | Paciente | HU_017 |
+| PUT | `/api/recordatorios/{id}/leido` | Paciente (el suyo) | HU_017 |
+| POST | `/api/recordatorios/generar` | Recepcionista, Administrador | HU_017 |
 
 Errores con mensaje en español: 400 (datos inválidos), 401 (sin sesión), 402 (pago rechazado), 403 (sin permiso), 404 (no existe), 409 (conflicto: correo repetido, franja ocupada), 422 (regla de negocio).
 
 ### Pruebas
 
 ```bash
-cd backend && mvn test           # 23 pruebas JUnit
+cd backend && mvn test           # 30 pruebas JUnit
 newman run postman/CitaSalud.postman_collection.json -e postman/CitaSalud-Local.postman_environment.json
 ```
 

@@ -1,6 +1,6 @@
 # Resumen de historias de usuario
 
-CitaSalud tiene **16 historias de usuario** agrupadas en 5 épicas, con **43 puntos** en total.
+CitaSalud tiene **17 historias de usuario** agrupadas en 5 épicas, con **46 puntos** en total.
 
 | Épica | HU | Título | Actor | Prioridad | Puntos | RF |
 |---|---|---|---|---|---|---|
@@ -17,6 +17,7 @@ CitaSalud tiene **16 historias de usuario** agrupadas en 5 épicas, con **43 pun
 | 4. Citas | [HU_011](HU_011.md) | Cancelar cita | Paciente, Recepcionista | Media | 2 | RF_013 |
 | 4. Citas | [HU_012](HU_012.md) | Reprogramar cita | Paciente, Recepcionista | Media | 3 | RF_014 |
 | 4. Citas | [HU_013](HU_013.md) | Agendar cita para un paciente | Recepcionista | Media | 3 | RF_015 |
+| 4. Citas | [HU_017](HU_017.md) | Recibir recordatorios de citas | Paciente | Media | 3 | RF_019 |
 | 5. Atención y reportes | [HU_014](HU_014.md) | Consultar agenda del día | Médico | Alta | 2 | RF_016 |
 | 5. Atención y reportes | [HU_015](HU_015.md) | Registrar atención o inasistencia | Médico | Alta | 3 | RF_017 |
 | 5. Atención y reportes | [HU_016](HU_016.md) | Consultar reporte de citas | Administrador | Media | 3 | RF_018 |
@@ -35,5 +36,6 @@ CitaSalud tiene **16 historias de usuario** agrupadas en 5 épicas, con **43 pun
 - **RN_10.** Al cancelar una cita se solicita el reembolso total a la pasarela.
 - **RN_11.** Una cita se reprograma máximo 2 veces.
 - **RN_12.** Solo el médico de la cita registra la atención o la inasistencia, y solo cuando la hora de la cita ya llegó.
+- **RN_13.** Cada cita programada recibe un recordatorio cuando faltan 24 horas o menos; nunca para citas canceladas y sin repetirlo para la misma fecha.
 
 Ejemplo con una tarifa de $60.000: Particular $65.000, Convenio $56.000, Prepagada $47.000.

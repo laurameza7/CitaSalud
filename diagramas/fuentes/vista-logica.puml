@@ -79,6 +79,7 @@ class Cita <<Experto>> {
   + {static} DURACION_MINUTOS : int = 30
   + {static} HORAS_MINIMAS_PARA_CAMBIOS : int = 24
   + {static} MAXIMO_REPROGRAMACIONES : int = 2
+  + {static} HORAS_ANTES_RECORDATORIO : int = 24
   - id : String
   - fechaHora : LocalDateTime
   - estado : EstadoCita
@@ -92,6 +93,7 @@ class Cita <<Experto>> {
   + Cita(paciente, medico, especialidad, fechaHora, motivo, valorPagado, creadaEn)
   + puedeCancelarse(ahora) : boolean
   + puedeReprogramarse(ahora) : boolean
+  + necesitaRecordatorio(ahora) : boolean
   + cancelar(ahora) : void
   + reprogramar(nuevaFechaHora, ahora) : void
   + registrarAtencion(notas, ahora) : void
@@ -99,6 +101,27 @@ class Cita <<Experto>> {
   + registrarPago(referencia) : void
   + valorRecaudado() : long
   + getters / setters
+}
+
+class Recordatorio <<Experto>> {
+  - id : String
+  - pacienteId : String
+  - fechaCita : LocalDateTime
+  - mensaje : String
+  - creadoEn : LocalDateTime
+  - leido : boolean
+  + Recordatorio(cita : Cita, creadoEn : LocalDateTime)
+  + estaVigente() : boolean
+  + esDelPaciente(id : String) : boolean
+  + marcarLeido() : void
+  + getters
+}
+
+interface NotificadorRecordatorios <<interface>> <<Variaciones protegidas>> {
+  + enviar(recordatorio : Recordatorio) : void
+}
+class NotificadorRecordatoriosSimulado {
+  + enviar(recordatorio : Recordatorio) : void
 }
 
 class ReporteCitas <<Creador>> {
@@ -187,6 +210,7 @@ Medico "1" -- "0..*" Cita : atiende >
 Paciente "1" -- "0..*" Cita : agenda >
 Cita "0..*" --> "1" Especialidad : especialidad
 Cita --> "1" EstadoCita : estado
+Recordatorio "0..*" --> "1" Cita : recuerda
 
 ReporteCitas "1" *-- "0..*" LineaReporte : lineas
 ReporteCitas ..> Cita : resume
@@ -200,6 +224,8 @@ Especialidad ..> FabricaTarifas : usa
 
 PasarelaPagos <|.. PasarelaPagosSimulada
 PasarelaPagos ..> ResultadoPago
+NotificadorRecordatorios <|.. NotificadorRecordatoriosSimulado
+NotificadorRecordatorios ..> Recordatorio : envía
 
 note bottom of EstrategiaTarifa
   RN_01: valor = tarifa − descuento + cargo administrativo
@@ -211,14 +237,15 @@ note right of Cita
   RN_08: cancelar o reprogramar con más de 24 h
   RN_11: máximo 2 reprogramaciones
   RN_12: atención solo cuando la cita ya empezó
+  RN_13: recordatorio 24 h antes, solo si está programada
 end note
 
 legend top left
   <b>Patrones GRASP y GoF</b>
-  Experto: Usuario.verificarContrasena, Especialidad.valorPara, Medico.atiendeEn, Cita.puedeCancelarse
+  Experto: Usuario.verificarContrasena, Especialidad.valorPara, Medico.atiendeEn, Cita.puedeCancelarse, Recordatorio.estaVigente
   Creador: Medico.crearCita crea Cita; ReporteCitas crea LineaReporte
   Polimorfismo / Strategy: EstrategiaTarifa y sus 3 tarifas
   Fabricación pura / Simple Factory: FabricaTarifas
-  Variaciones protegidas / Indirección: PasarelaPagos
+  Variaciones protegidas / Indirección: PasarelaPagos, NotificadorRecordatorios
 endlegend
 @enduml
