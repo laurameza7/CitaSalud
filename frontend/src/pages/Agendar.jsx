@@ -58,7 +58,7 @@ export default function Agendar() {
   }
 
   return (
-    <section>
+    <section className="formulario-tarjeta">
       <h1>Agendar cita</h1>
       {medico && <p><strong>{medico.nombre}</strong> · {medico.especialidad} · {medico.consultorio}</p>}
       {pacienteId && <p className="suave">Agendando en nombre de un paciente (recepción).</p>}

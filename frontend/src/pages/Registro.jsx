@@ -27,8 +27,9 @@ export default function Registro() {
   };
 
   return (
-    <section>
+    <section className="formulario-tarjeta">
       <h1>Crear cuenta de paciente</h1>
+      <p className="suave">Regístrate para agendar y pagar tus citas en línea.</p>
       <form onSubmit={enviar}>
         <label>Nombre completo<input value={datos.nombre} onChange={cambiar('nombre')} required /></label>
         <label>Documento<input value={datos.documento} onChange={cambiar('documento')} required /></label>
