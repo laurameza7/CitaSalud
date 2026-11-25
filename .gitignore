@@ -18,3 +18,7 @@ Thumbs.db
 # Archivos temporales de Visual Paradigm
 *.vpp.bak*
 *.vpp.lck
+
+# Carpetas locales que crea Postman
+postman/.postman/
+postman/postman/
