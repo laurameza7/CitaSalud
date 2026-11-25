@@ -197,6 +197,13 @@ tfoot td { font-weight: 700; background: #f8fafc; }
   .pie-columnas { grid-template-columns: 1fr; }
   .oculto-movil { display: none; }
   .usuario-datos { display: none; }
+  .barra-interna { gap: 8px; padding-top: 10px; padding-bottom: 8px; }
+  .barra nav { width: 100%; flex-wrap: nowrap; overflow-x: auto; gap: 2px; scrollbar-width: none; }
+  .barra nav::-webkit-scrollbar { display: none; }
+  .barra nav > a { padding: 7px 10px; font-size: .9rem; white-space: nowrap; }
+  .barra nav > a.boton-nav { padding: 7px 12px; }
+  .usuario-chip { margin-left: auto; flex: none; }
+  main { padding-top: 20px; }
   .formulario-tarjeta { padding: 22px 18px; }
 }
 @media (max-width: 480px) {
